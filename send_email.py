@@ -37,18 +37,19 @@ config = Config(
     password="XXXX"
 )
 
-receiver_email = "3535521945@qq.com"
-
-html = """\
-<html>
-  <body>
-    <div>
-      <h2>你好</h2>
-      <a href="http://www.baidu.com">百度一下</a>
-    </div>
-  </body>
-</html>
-"""
 
 if __name__ == "__main__":
+    receiver_email = "3535521945@qq.com"
+
+    html = """\
+    <html>
+      <body>
+        <div>
+          <h2>你好</h2>
+          <a href="http://www.baidu.com">百度一下</a>
+        </div>
+      </body>
+    </html>
+    """
+
     send_email(config, receiver_email, "这是一封HTML邮件", html)
