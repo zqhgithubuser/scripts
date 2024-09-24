@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import re
 
 
@@ -8,8 +10,7 @@ def find_email(text):
         @
         [a-zA-Z0-9.-]+
         (\.[a-zA-z]{2,4})
-        )''', re.VERBOSE
-    )
+        )''', re.VERBOSE)
 
     for group in email_regex.findall(text):
         yield group[0]
