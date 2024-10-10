@@ -18,14 +18,9 @@ def backup(dir_path, target_dir):
         return
 
     print(f"Creating {zipFilename}...")
-    shutil.make_archive(
-        zipBasename,
-        "zip",
-        root_dir=dirname,
-        base_dir=basename
-    )
+    shutil.make_archive(zipBasename, "zip", root_dir=dirname, base_dir=basename)
     print("Completed!")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     backup("text_files", "/home/runner/scripts/dst")
