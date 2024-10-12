@@ -8,14 +8,13 @@ from dataclasses import dataclass
 
 @dataclass
 class Config:
-    smtp_server: str
-    port: int
-    login_email: str
-    password: str
+    smtp_server: str = "smtp.163.com"
+    port: int = 465
+    login_email: str = ("15815085647@163.com",)
+    password: str = "XXXX"
 
 
-def send_email(config: Config, receiver_email: str, subject: str,
-               html_content: str):
+def send_email(config: Config, receiver_email: str, subject: str, html_content: str):
     sender_email = config.login_email
 
     message = MIMEMultipart()
@@ -30,17 +29,11 @@ def send_email(config: Config, receiver_email: str, subject: str,
         print("邮件发送成功!")
 
 
-config = Config(
-    smtp_server="smtp.163.com",
-    port=465,
-    login_email="15815085647@163.com",
-    password="XXXX"
-)
+if __name__ == "__main__": 
+    config = Config()
 
-
-if __name__ == "__main__":
     receiver_email = "3535521945@qq.com"
-
+    subject = "这是一封HTML邮件"
     html = """\
     <html>
       <body>
@@ -52,4 +45,4 @@ if __name__ == "__main__":
     </html>
     """
 
-    send_email(config, receiver_email, "这是一封HTML邮件", html)
+    send_email(config, receiver_email, subject, html)
