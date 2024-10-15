@@ -1,26 +1,27 @@
 from datetime import datetime
-import os
+from pathlib import Path
 import pytz
 import shutil
 
 
 def backup(dir_path, target_dir):
-    fullpath = os.path.abspath(dir_path)
-    dirname = os.path.dirname(fullpath)
-    basename = os.path.basename(fullpath)
+    fullpath = Path(dir_path).absolute()
+    dirname = fullpath.parents[0]
+    basename = fullpath.name
 
     tz = pytz.timezone("Asia/Shanghai")
     today = datetime.now(tz).date()
-    zipBasename = os.path.join(target_dir, f"{basename}_{today}")
-    zipFilename = zipBasename + ".zip"
-    if os.path.exists(zipFilename):
+    zipFilename = Path(target_dir).absolute() / f"{basename}_{today}.zip"
+    if Path(zipFilename).exists():
         print(f"Zip file {zipFilename} already exists.")
         return
 
     print(f"Creating {zipFilename}...")
-    shutil.make_archive(zipBasename, "zip", root_dir=dirname, base_dir=basename)
+    shutil.make_archive(
+        zipFilename.with_suffix(""), "zip", root_dir=dirname, base_dir=basename
+    )
     print("Completed!")
 
 
 if __name__ == "__main__":
-    backup("text_files", "/home/runner/scripts/dst")
+    backup("text_files", "./dest")
