@@ -1,5 +1,6 @@
-import psutil
 from datetime import datetime
+
+import psutil
 
 # 巡检时间
 inspection_time = datetime.now().strftime("%Y-%m-%d_%H:%M:%S")

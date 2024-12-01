@@ -1,7 +1,8 @@
+import shutil
 from datetime import datetime
 from pathlib import Path
+
 import pytz
-import shutil
 
 
 def backup(dir_path, target_dir):
