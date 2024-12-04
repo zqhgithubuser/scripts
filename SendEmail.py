@@ -7,34 +7,48 @@ from email.mime.text import MIMEText
 
 
 @dataclass
-class Config:
+class SmtpServerConfig:
+    password: str
+    sender_email: str = "15815085647@163.com"
     smtp_server: str = "smtp.163.com"
-    port: int = 465
-    login_email: str = ("15815085647@163.com",)
-    password: str = "XXXX"
+    smtp_port: int = 465
 
 
-def send_email(config: Config, receiver_email: str, subject: str, html_content: str):
-    sender_email = config.login_email
-
+def create_email_message(subject, sender_email, recipient_email, html_content):
+    """创建邮件消息"""
     message = MIMEMultipart()
     message["Subject"] = subject
     message["From"] = sender_email
-    message["To"] = receiver_email
+    message["To"] = recipient_email
     message.attach(MIMEText(html_content, "html"))
+    return message
 
-    with smtplib.SMTP_SSL(config.smtp_server, config.port) as server:
-        server.login(config.login_email, config.password)
-        server.sendmail(sender_email, receiver_email, message.as_string())
+
+def send_email(config, subject, recipient_email, html_content):
+    """发送邮件"""
+    sender_email = config.sender_email
+    password = config.password
+    smtp_server = config.smtp_server
+    smtp_port = config.smtp_port
+
+    # 创建邮件消息
+    email_message = create_email_message(
+        subject, sender_email, recipient_email, html_content
+    )
+
+    # 使用 SMTP 发送邮件
+    with smtplib.SMTP_SSL(smtp_server, smtp_port) as server:
+        server.login(sender_email, password)
+        server.sendmail(sender_email, recipient_email, email_message.as_string())
         print("邮件发送成功!")
 
 
-if __name__ == "__main__": 
-    config = Config()
+if __name__ == "__main__":
+    config = SmtpServerConfig(password="XXXX")
 
-    receiver_email = "3535521945@qq.com"
+    recipient_email = "3535521945@qq.com"
     subject = "这是一封HTML邮件"
-    html = """\
+    html_content = """\
     <html>
       <body>
         <div>
@@ -45,4 +59,4 @@ if __name__ == "__main__":
     </html>
     """
 
-    send_email(config, receiver_email, subject, html)
+    send_email(config, subject, recipient_email, html_content)
