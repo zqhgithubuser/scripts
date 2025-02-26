@@ -1,22 +1,22 @@
 #!/bin/bash
 
-NGINX_VERSION=1.22.0
-NGINX_SOURCE=nginx-"$NGINX_VERSION".tar.gz
-DOWNLOAD_URL=https://nginx.org/download/
-INSTALL_DIR=/usr/local/nginx
-CPUS=$(grep -c processor /proc/cpuinfo)
+nginx_version=1.22.0
+nginx_source=nginx-"$nginx_version".tar.gz
+download_url=https://nginx.org/download/
+install_dir=/usr/local/nginx
+cpu_cores=$(grep -c processor /proc/cpuinfo)
 
 get_distribution() {
     local lsb_dist="$(. /etc/os-release && echo "$ID")"
     echo "$lsb_dist"
 }
 
-download_nginx() {
-    if [ -e "$NGINX_SOURCE" ]; then
+download_nginx_source() {
+    if [ -e "$nginx_source" ]; then
         echo "The source code package is ready!"
     else
         echo 'Downloading Nginx source code package...'
-        if ! wget "$DOWNLOAD_URL""$NGINX_SOURCE"; then
+        if ! wget "$download_url$nginx_source"; then
             echo "Download failed."
             exit 1
         fi
@@ -44,23 +44,23 @@ install_dependencies() {
 install_nginx() {
     echo "Installing Nginx..."
     useradd -s /sbin/nologin -r nginx &> /dev/null || echo "user 'nginx' already created."
-    tar xf "$NGINX_SOURCE"
-    NGINX_DIR=$(echo "$NGINX_SOURCE" | sed -rn 's/^(.*[0-9]).*/\1/p')
-    cd "$NGINX_DIR"
-    if ! { ./configure --prefix="$INSTALL_DIR" --user=nginx --group=nginx \
+    tar xf "$nginx_source"
+    nginx_dir=$(echo "$nginx_source" | sed -rn 's/^(.*[0-9]).*/\1/p')
+    cd "$nginx_dir"
+    if ! { ./configure --prefix="$install_dir" --user=nginx --group=nginx \
         --with-http_ssl_module --with-http_v2_module --with-http_realip_module \
         --with-http_stub_status_module --with-http_gzip_static_module --with-pcre \
         --with-stream --with-stream_ssl_module --with-stream_realip_module && \
-        make -j $CPUS && make install; }; then
+        make -j $cpu_cores && make install; }; then
         echo "Compile and install failed."
         exit 1
     fi
     echo "Compile and install successfully!"
-    chown -R nginx:nginx "$INSTALL_DIR"
-    echo "export PATH=\$PATH:${INSTALL_DIR}/sbin" > /etc/profile.d/nginx.sh
+    chown -R nginx:nginx "$install_dir"
+    echo "export PATH=\$PATH:${install_dir}/sbin" > /etc/profile.d/nginx.sh
 }
 
-setup_systemd() {
+setup_nginx_service() {
 	cat > /lib/systemd/system/nginx.service <<-EOF
 	[Unit]
 	Description=A high performance web server and a reverse proxy server
@@ -68,11 +68,11 @@ setup_systemd() {
 	
 	[Service]
 	Type=forking
-	PIDFile=${INSTALL_DIR}/logs/nginx.pid
-	ExecStartPre=${INSTALL_DIR}/sbin/nginx -t -q
-	ExecStart=${INSTALL_DIR}/sbin/nginx
-	ExecReload=${INSTALL_DIR}/sbin/nginx -s reload
-	ExecStop=-/usr/sbin/start-stop-daemon --quiet --stop --retry QUIT/5 --pidfile ${INSTALL_DIR}/logs/nginx.pid
+	PIDFile=${install_dir}/logs/nginx.pid
+	ExecStartPre=${install_dir}/sbin/nginx -t -q
+	ExecStart=${install_dir}/sbin/nginx
+	ExecReload=${install_dir}/sbin/nginx -s reload
+	ExecStop=-/usr/sbin/start-stop-daemon --quiet --stop --retry QUIT/5 --pidfile ${install_dir}/logs/nginx.pid
 	TimeoutStopSec=3
 	KillMode=process
 	PrivateTmp=true
@@ -92,11 +92,12 @@ setup_systemd() {
 }
 
 main() {
-    download_nginx
+    download_nginx_source
     install_dependencies
     install_nginx
-    setup_systemd
-    echo "Completed!"
+    setup_nginx_service
 }
 
 main
+
+echo "Completed!"
