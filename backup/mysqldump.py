@@ -42,7 +42,7 @@ def backup_database(db, backup_dir, password):
 
 
 def main():
-    date_str = datetime.now().strftime("%Y-%m-%d")
+    date_str = datetime.now().strftime("%Y_%m_%d")
     backup_dir = os.path.join("/tmp", f"backup_{date_str}")
 
     if not os.path.exists(backup_dir):
