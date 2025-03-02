@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -e
-
 repo_rpm_url="https://repo.mysql.com/mysql80-community-release-el8.rpm"
 repo_rpm_filename=$( basename "$repo_rpm_url" )
 rpm_gpg_key="https://repo.mysql.com/RPM-GPG-KEY-mysql-2023"
@@ -24,8 +22,8 @@ sudo systemctl enable mysqld.service
 sudo systemctl start mysqld.service
 
 # 修改 root 密码
-mysql -uroot -p"$mysql_root_password" -e "ALTER USER 'root'@'localhost' IDENTIFIED BY $new_root_password"
+mysql -uroot -p"$mysql_root_password" -e "ALTER USER 'root'@'localhost' IDENTIFIED BY $new_root_password;"
 
-if mysql -uroot -p"$new_root_password" -e "SHOW DATABASES"; then
-   echo "成功修改root密码！"
+if mysql -uroot -p"$new_root_password" -e "SHOW DATABASES;" 2> /dev/null; then
+    echo "成功修改 root 密码！"
 fi
