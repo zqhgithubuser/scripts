@@ -22,7 +22,7 @@ sudo systemctl enable mysqld.service
 sudo systemctl start mysqld.service
 
 # 修改 root 密码
-mysql -uroot -p"$mysql_root_password" -e "ALTER USER 'root'@'localhost' IDENTIFIED BY $new_root_password;"
+mysql --connect-expired-password -uroot -p"$mysql_root_password" -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '$new_root_password';"
 
 if mysql -uroot -p"$new_root_password" -e "SHOW DATABASES;" 2> /dev/null; then
     echo "成功修改 root 密码！"
